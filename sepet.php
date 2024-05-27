@@ -3,8 +3,17 @@
 
 <head>
     <?php
-    session_start();
-    ?>
+      session_start();
+
+      // URL'den masa numarasını al
+      $masa_no = $_GET['id'] ?? '';
+
+      // Masa numarasını session'a ata
+      $_SESSION['masa_no'] = $masa_no;
+
+     
+      
+      ?>
 
   <!-- Baglanti deneme baslangic -->
   
@@ -65,12 +74,12 @@
   <header id="header" class="fixed-top d-flex align-items-cente">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-lg-between">
 
-      <h1 class="logo me-auto me-lg-0"><a href="index.html">Meydan Park Cafe</a></h1>
+      <h1 class="logo me-auto me-lg-0"><a href="/cafenew/index.php?id=<?php echo $masa_no; ?>">Meydan Park Cafe</a></h1>
       
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Anasayfa</a></li>
+          <li><a class="nav-link scrollto active" href="/cafenew/index.php?id=<?php echo $masa_no; ?>">Anasayfa</a></li>
           
           <li><a class="nav-link scrollto" href="#menu">Menü</a></li>
           
@@ -80,31 +89,12 @@
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
-      <a href="#book-a-table" class="book-a-table-btn scrollto d-none d-lg-flex">Rezervasyon Yap</a>
+      <a href="/cafenew/index.php?id=<?php echo $masa_no; ?>" class="book-a-table-btn scrollto d-none d-lg-flex">Menüye Dön</a>
 
     </div>
   </header>
 
-  <!-- ======= center başlangıç ======= -->
-  <section id="hero" class="d-flex align-items-center">
-    <div class="container position-relative text-center text-lg-start" data-aos="zoom-in" data-aos-delay="100">
-      <div class="row">
-        <div class="col-lg-8">
-          <h1>Meydan Park Gölhisar'a<span> Hoşgeldiniz</span></h1>
-          <h2>Gölhisar'ın Gözde Parkı</h2>
-
-          <div class="btns">
-            <a href="#menu" class="btn-menu animated fadeInUp scrollto">Menü Listesi</a>
-            <a href="#book-a-table" class="btn-book animated fadeInUp scrollto">Rezervasyon</a>
-          </div>
-        </div>
-        <div class="col-lg-4 d-flex align-items-center justify-content-center position-relative" data-aos="zoom-in" data-aos-delay="200">
-          <a href="https://www.youtube.com/watch?v=UFnGSywbZtk" class="glightbox play-btn"></a>
-        </div>
-
-      </div>
-    </div>
-  </section><!-- bitiş -->
+ 
 
   
 
@@ -119,6 +109,10 @@
           <h2>Sepet</h2>
           <p>Ürünler</p>
         </div>
+
+        <?php
+           echo "<span>Masa Numaranız: {$masa_no}"; 
+          ?>
 
         <div class="row" data-aos="fade-up" data-aos-delay="100">
           <div class="col-lg-12 d-flex justify-content-center">
@@ -137,51 +131,54 @@
 
 
 if(isset($_POST['remove_from_cart'])) {
-    $urun_id = $_POST['urun_id'];
+  $urun_id = $_POST['urun_id'];
+  $sepet_adi = 'sepet_' . $_SESSION['masa_no'];
 
-    if(isset($_SESSION['sepet'][$urun_id])) {
-        unset($_SESSION['sepet'][$urun_id]);
-    }
+  if(isset($_SESSION[$sepet_adi][$urun_id])) {
+      unset($_SESSION[$sepet_adi][$urun_id]);
+  }
 }
 
-if (!isset($_SESSION['sepet']) || empty($_SESSION['sepet'])) {
-    echo "<h1>Sepetiniz Boş</h1>";
+$sepet_adi = 'sepet_' . $_SESSION['masa_no'];
+
+if (!isset($_SESSION[$sepet_adi]) || empty($_SESSION[$sepet_adi])) {
+  echo "<h1>Sepetiniz Boş</h1>";
 } else {
-    echo "<div class='row'>";
-    foreach ($_SESSION['sepet'] as $urun_id => $adet) {
-        $sorgu = $db->prepare("SELECT * FROM menu WHERE id = :urun_id");
-        $sorgu->bindParam(':urun_id', $urun_id);
-        $sorgu->execute();
-        $urun = $sorgu->fetch(PDO::FETCH_ASSOC);
+  echo "<div class='row'>";
+  foreach ($_SESSION[$sepet_adi] as $urun_id => $adet) {
+      $sorgu = $db->prepare("SELECT * FROM menu WHERE id = :urun_id");
+      $sorgu->bindParam(':urun_id', $urun_id);
+      $sorgu->execute();
+      $urun = $sorgu->fetch(PDO::FETCH_ASSOC);
 
-        $filter_class = '';
-        if ($urun['kategori'] == 'kahvalti') {
-            $filter_class = 'filter-kahvalti';
-        } elseif ($urun['kategori'] == 'pizza') {
-            $filter_class = 'filter-pizza';
-        }
+      $filter_class = '';
+      if ($urun['kategori'] == 'kahvalti') {
+          $filter_class = 'filter-kahvalti';
+      } elseif ($urun['kategori'] == 'pizza') {
+          $filter_class = 'filter-pizza';
+      }
 
-        echo "<div class='col-lg-6 menu-item $filter_class'>";
-        echo "<img src='verifoto/kahvaltifoto/{$urun['id']}.jpg' class='menu-img' alt=''>";
-        echo "<div class='menu-content'>";
-        echo "<span>{$urun['menu_name']}</span><span>{$urun['menu_price']} ₺</span>";
-        echo "<div id='hero.btn-menu'>";
-        echo "<form method='post' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "'>";
-        echo "<input type='hidden' name='urun_id' value='{$urun['id']}'>";
-        echo "<a>";
-        echo "<button style='background-color: #CDA45E' type='submit' class='butonekle'>Sepetten kaldır</button>";
-        echo "</a>";
-        echo "<input type='hidden' name='remove_from_cart' value='1'>";
-        echo "</form>";
-        echo "</div>";
-        echo "</div>";
-        echo "<div class='menu-ingredients'>{$urun['menu_ex']}</div>";
-        echo "</div>"; 
-    }
-    echo "</div>";
+      echo "<div class='col-lg-6 menu-item $filter_class'>";
+      echo "<img src='verifoto/kahvaltifoto/{$urun['id']}.jpg' class='menu-img' alt=''>";
+      echo "<div class='menu-content'>";
+      echo "<span>{$urun['menu_name']}</span><span>{$urun['menu_price']} ₺</span>";
+      echo "<div id='hero.btn-menu'>";
+      echo "<form method='post' action='/cafenew/sepet.php?id={$masa_no}'>";
+      echo "<input type='hidden' name='urun_id' value='{$urun['id']}'>";
+      echo "<a>";
+      echo "<button style='background-color: #CDA45E' type='submit' class='butonekle'>Sepetten kaldır</button>";
+      echo "</a>";
+      echo "<input type='hidden' name='remove_from_cart' value='1'>";
+      echo "</form>";
+      echo "</div>";
+      echo "</div>";
+      echo "<div class='menu-ingredients'>{$urun['menu_ex']}</div>";
+      echo "</div>"; 
+  }
+  echo "</div>";
 }
-
 ?>
+
 
           <!-- menu php bitis ....................................................................................  -->
 
@@ -194,13 +191,14 @@ $total_price = 0; // Toplam fiyatı saklamak için değişken
 
 if (isset($_POST['remove_from_cart'])) {
     $urun_id = $_POST['urun_id'];
+    $sepet_adi = 'sepet_' . $_SESSION['masa_no'];
 
-    if (isset($_SESSION['sepet'][$urun_id])) {
-        unset($_SESSION['sepet'][$urun_id]);
+    if (isset($_SESSION[$sepet_adi][$urun_id])) {
+        unset($_SESSION[$sepet_adi][$urun_id]);
     }
 }
 
-if (!isset($_SESSION['sepet']) || empty($_SESSION['sepet'])) {
+if (!isset($_SESSION[$sepet_adi]) || empty($_SESSION[$sepet_adi])) {
     echo "<h1></h1>";
 } else {
     echo "<div style='text-align: center; margin-top: 100px;'>";
@@ -208,7 +206,7 @@ if (!isset($_SESSION['sepet']) || empty($_SESSION['sepet'])) {
     echo "<table style='margin-bottom: 10px;'>";
     echo "<thead><tr><th>Ürün Adı</th><th>Adet</th><th>Birim Fiyat</th><th>Toplam Fiyat</th></tr></thead>";
     echo "<tbody>";
-    foreach ($_SESSION['sepet'] as $urun_id => $adet) {
+    foreach ($_SESSION[$sepet_adi] as $urun_id => $adet) {
         $sorgu = $db->prepare("SELECT * FROM menu WHERE id = :urun_id");
         $sorgu->bindParam(':urun_id', $urun_id);
         $sorgu->execute();
@@ -224,7 +222,7 @@ if (!isset($_SESSION['sepet']) || empty($_SESSION['sepet'])) {
         echo "<td>{$urun['menu_price']} ₺</td>";
         echo "<td>{$toplam_fiyat} ₺</td>";
         echo "<td>";
-        echo "<form method='post' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "'>";
+        echo "<form method='post' action='/cafenew/sepet.php?id={$masa_no}'>";
         echo "<input type='hidden' name='urun_id' value='{$urun['id']}'>";
         echo "<button style='background-color: #CDA45E' type='submit' class='butonekle'>Sepetten Kaldır</button>";
         echo "<input type='hidden' name='remove_from_cart' value='1'>";
@@ -240,6 +238,7 @@ if (!isset($_SESSION['sepet']) || empty($_SESSION['sepet'])) {
     // Toplam fiyatı göster
     echo "<p style='text-align: center; color:#CDA45E; font-size: 25px;'>Toplam Fiyat: {$total_price} ₺</p>";
 }
+
 ?>
 
 

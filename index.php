@@ -2,13 +2,18 @@
 <html lang="en">
 
 <head>
-  <!-- Baglanti deneme baslangic -->
-  
-  <!-- kahvalti baglanti -->
-  
-  
-  <?php 
+
+  <?php
   session_start();
+
+  // URL'den masa numarasını al
+  $masa_no = $_GET['id'] ?? '';
+
+  // Masa numarasını session'a ata
+  $_SESSION['masa_no'] = $masa_no;
+
+  // Kullanıcıyı sepet sayfasına yönlendir
+  
   ?>
 
 
@@ -73,9 +78,9 @@
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Anasayfa</a></li>
+          <li><a class="nav-link scrollto active" href="/cafenew/index.php?id=<?php echo $masa_no; ?>">Anasayfa</a></li>
           
-          <li><a class="nav-link scrollto" href="#menu">Menü</a></li>
+          <li><a class="nav-link scrollto" href="/cafenew/index.php?id=<?php echo $masa_no; ?>">Menü</a></li>
           
           
           
@@ -83,7 +88,8 @@
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
-      <a href="sepet.php" class="book-a-table-btn scrollto d-none d-lg-flex">Sepete Git</a>
+      <a href="/cafenew/sepet.php?id=<?php echo $masa_no; ?>" class="book-a-table-btn scrollto d-none d-lg-flex">Sepete Git</a>
+
 
     </div>
   </header>
@@ -119,9 +125,14 @@
       <div class="container" data-aos="fade-up" id="yön12">
 
         <div class="section-title">
+         
           <h2>Menu</h2>
           <p>Bugun Ne Denemek İstersiniz?</p>
         </div>
+
+        <?php
+           echo "<span>Masa Numaranız: {$masa_no}"; 
+          ?>
 
         <div class="row" data-aos="fade-up" data-aos-delay="100">
           <div class="col-lg-12 d-flex justify-content-center">
@@ -137,23 +148,27 @@
 
         <div class="row menu-container" data-aos="fade-up" data-aos-delay="200">
 
-
+       
 
         <!-- manu begin  -->
         <?php  
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!empty($_POST["urun_id"]) && is_numeric($_POST["urun_id"])) {
-        $urun_id = $_POST["urun_id"];
-        if (!isset($_SESSION['sepet'][$urun_id])) {
-            $_SESSION['sepet'][$urun_id] = 1;
-        } else {
-            $_SESSION['sepet'][$urun_id]++;
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+          // Masa numarasına göre sepet adını belirleyin
+          $sepet_adi = 'sepet_' . $masa_no;
+
+          if (!empty($_POST["urun_id"]) && is_numeric($_POST["urun_id"])) {
+              $urun_id = $_POST["urun_id"];
+              if (!isset($_SESSION[$sepet_adi][$urun_id])) {
+                  $_SESSION[$sepet_adi][$urun_id] = 1;
+              } else {
+                  $_SESSION[$sepet_adi][$urun_id]++;
+              }
+              echo "Ürün sepete eklendi"; // işlem kontrol sonra sil
+          } else {
+              echo "fail"; 
+          }
         }
-        echo "Ürün sepete eklendi"; // işlem kontrol sonra sil
-    }     else {
-             echo "fail"; 
-    }
-}
 
 
 
@@ -165,12 +180,15 @@ while ($degisken = $sorgu->fetch(PDO::FETCH_ASSOC)) {
         $filter_class = 'filter-pizza';
     }
 
+    
+    
+   
     echo "<div class='col-lg-6 menu-item $filter_class'>";
     echo "<img src='verifoto/kahvaltifoto/{$degisken['id']}.jpg' class='menu-img' alt=''>";
     echo "<div class='menu-content'>";
     echo "<span>{$degisken['menu_name']}</span><span>{$degisken['menu_price']} ₺</span>";
     echo "<div id='hero.btn-menu'>";
-    echo "<form method='post' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "'>";
+    echo "<form method='post' action='/cafenew/index.php?id={$masa_no}'>";
     echo "<input type='hidden' name='urun_id' value='{$degisken['id']}'>";
       echo "<a>";
         echo "<button  style='background-color: #CDA45E' type='submit' class='butonekle'>Sepete Ekle</button>";
