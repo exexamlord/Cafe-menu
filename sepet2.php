@@ -165,9 +165,7 @@ if (!isset($_SESSION[$sepet_adi]) || empty($_SESSION[$sepet_adi])) {
       echo "<div id='hero.btn-menu'>";
       echo "<form method='post' action='/cafenew/sepet.php?id={$masa_no}'>";
       echo "<input type='hidden' name='urun_id' value='{$urun['id']}'>";
-      echo "<a>";
-      echo "<button style='background-color: #CDA45E' type='submit' class='butonekle'>Sepetten kaldır</button>";
-      echo "</a>";
+      echo "<span>Hazırlanıyor</span>";
       echo "<input type='hidden' name='remove_from_cart' value='1'>";
       echo "</form>";
       echo "</div>";
@@ -224,7 +222,7 @@ if (!isset($_SESSION[$sepet_adi]) || empty($_SESSION[$sepet_adi])) {
         echo "<td>";
         echo "<form method='post' action='/cafenew/sepet.php?id={$masa_no}'>";
         echo "<input type='hidden' name='urun_id' value='{$urun['id']}'>";
-        echo "<button style='background-color: #CDA45E' type='submit' class='butonekle'>Sepetten Kaldır</button>";
+       
         echo "<input type='hidden' name='remove_from_cart' value='1'>";
         echo "</form>";
         echo "</td>";
@@ -240,9 +238,7 @@ if (!isset($_SESSION[$sepet_adi]) || empty($_SESSION[$sepet_adi])) {
 }
 
 ?>
-      <div style='text-align: center; margin-top: 30px;'>
-      <a href="/cafenew/sepet2.php?id=<?php echo $masa_no; ?>" style='background-color: #CDA45E; color: black; padding: 10px;' class='butonekle'>Sepeti Onayla</a>
-      </div>
+      
 
     </section><!-- menu bitiş -->
 
@@ -309,7 +305,6 @@ if (!isset($_SESSION[$sepet_adi]) || empty($_SESSION[$sepet_adi])) {
 
   <div id="preloader"></div>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
 
   <!-- js bootstrap -->
   <script src="assets/vendor/aos/aos.js"></script> 

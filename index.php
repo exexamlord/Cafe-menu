@@ -88,7 +88,11 @@
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
+<<<<<<< Updated upstream
       <a href="/cafenew/sepet.php?id=<?php echo $masa_no; ?>" class="book-a-table-btn scrollto d-none d-lg-flex">Sepete Git</a>
+=======
+      <a href="/cafenew/sepet.php?id=<?php echo $masa_no; ?>" class="book-a-table-btn scrollto d-lg-flex">Sepete Git</a>
+>>>>>>> Stashed changes
 
 
     </div>
@@ -201,8 +205,10 @@ while ($degisken = $sorgu->fetch(PDO::FETCH_ASSOC)) {
 }
 ?>
 
-        </div>
 
+
+        </div>
+        <a href="/cafenew/sepet.php?id=<?php echo $masa_no; ?>" class="book-a-table-btn scrollto d-lg-flex">Sepete Git</a>
       </div>
     </section>
         <!-- menu bitiş ................................................................................................... -->
